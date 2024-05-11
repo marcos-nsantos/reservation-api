@@ -6,6 +6,8 @@ import (
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+
+	"github.com/marcos-nsantos/reservation-api/internal/entity"
 )
 
 func Connect(url string) (*gorm.DB, error) {
@@ -26,4 +28,20 @@ func Connect(url string) (*gorm.DB, error) {
 			return db, nil
 		}
 	}
+}
+
+func Migrate(db *gorm.DB) error {
+	if err := db.AutoMigrate(&entity.User{}); err != nil {
+		return fmt.Errorf("failed to migrate user: %w", err)
+	}
+
+	if err := db.AutoMigrate(&entity.Resource{}); err != nil {
+		return fmt.Errorf("failed to migrate resource: %w", err)
+	}
+
+	if err := db.AutoMigrate(&entity.Reservation{}); err != nil {
+		return fmt.Errorf("failed to migrate reservation: %w", err)
+	}
+
+	return nil
 }

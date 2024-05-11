@@ -24,9 +24,14 @@ func main() {
 	)
 
 	fmt.Println("Connecting to database...")
-	_, err := database.Connect(connectionURL)
+	db, err := database.Connect(connectionURL)
 	if err != nil {
 		fmt.Printf("failed to connect to database: %v\n", err)
+		os.Exit(1)
+	}
+
+	if err = database.Migrate(db); err != nil {
+		fmt.Printf("failed to migrate database: %v\n", err)
 		os.Exit(1)
 	}
 
