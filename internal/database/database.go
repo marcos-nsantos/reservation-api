@@ -10,11 +10,20 @@ import (
 	"github.com/marcos-nsantos/reservation-api/internal/entity"
 )
 
-func Connect(url string) (*gorm.DB, error) {
+func Connect(host, user, password, dbname, port string) (*gorm.DB, error) {
 	var tries int
 
+	databaseURL := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",
+		host,
+		user,
+		password,
+		dbname,
+		port,
+	)
+
 	for {
-		db, err := gorm.Open(postgres.Open(url), &gorm.Config{})
+		db, err := gorm.Open(postgres.Open(databaseURL), &gorm.Config{})
+
 		if err != nil {
 			if tries >= 5 {
 				return nil, fmt.Errorf("failed to connect to database: %w", err)

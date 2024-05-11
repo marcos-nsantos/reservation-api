@@ -12,22 +12,13 @@ import (
 )
 
 func main() {
+	postgresHost := os.Getenv("POSTGRES_HOST")
 	postgresUser := os.Getenv("POSTGRES_USER")
 	postgresPassword := os.Getenv("POSTGRES_PASSWORD")
 	postgresDB := os.Getenv("POSTGRES_DB")
-	postgresHost := os.Getenv("POSTGRES_HOST")
 	postgresPort := os.Getenv("POSTGRES_PORT")
 
-	connectionURL := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",
-		postgresHost,
-		postgresUser,
-		postgresPassword,
-		postgresDB,
-		postgresPort,
-	)
-
-	fmt.Println("Connecting to database...")
-	db, err := database.Connect(connectionURL)
+	db, err := database.Connect(postgresHost, postgresUser, postgresPassword, postgresDB, postgresPort)
 	if err != nil {
 		fmt.Printf("failed to connect to database: %v\n", err)
 		os.Exit(1)
@@ -48,5 +39,8 @@ func main() {
 	}
 
 	r := router.SetupRouter(userHandler)
-	r.Run(":" + port)
+	if err = r.Run(":" + port); err != nil {
+		fmt.Printf("failed to start server: %v\n", err)
+		os.Exit(1)
+	}
 }
