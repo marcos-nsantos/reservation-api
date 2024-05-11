@@ -29,9 +29,11 @@ func main() {
 		os.Exit(1)
 	}
 
+	key := os.Getenv("SECRET_KEY")
+
 	userRepo := repository.NewUserRepository(db)
 	userService := service.NewUserService(userRepo)
-	userHandler := handler.NewUserHandler(userService)
+	userHandler := handler.NewUserHandler(userService, key)
 
 	port := os.Getenv("PORT")
 	if port == "" {

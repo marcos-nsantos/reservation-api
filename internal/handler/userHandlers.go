@@ -7,14 +7,19 @@ import (
 
 	"github.com/marcos-nsantos/reservation-api/internal/entity"
 	"github.com/marcos-nsantos/reservation-api/internal/service"
+	"github.com/marcos-nsantos/reservation-api/internal/token"
 )
 
 type UserHandler struct {
 	UserService *service.UserService
+	Key         string
 }
 
-func NewUserHandler(userService *service.UserService) *UserHandler {
-	return &UserHandler{UserService: userService}
+func NewUserHandler(userService *service.UserService, key string) *UserHandler {
+	return &UserHandler{
+		UserService: userService,
+		Key:         key,
+	}
 }
 
 type CreateUserRequest struct {
@@ -43,4 +48,32 @@ func (h *UserHandler) CreateUser(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, user)
+}
+
+type UserLoginRequest struct {
+	Email    string `json:"email" binding:"required,email"`
+	Password string `json:"password" binding:"required"`
+}
+
+func (h *UserHandler) Authenticate(c *gin.Context) {
+	var userLoginRequest UserLoginRequest
+
+	if err := c.ShouldBindJSON(&userLoginRequest); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	user, err := h.UserService.Authenticate(userLoginRequest.Email, userLoginRequest.Password)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "email or password is incorrect"})
+		return
+	}
+
+	jwtToken, err := token.GenerateJWT(h.Key, user.ID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"token": jwtToken})
 }

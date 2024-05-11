@@ -23,3 +23,16 @@ func (s *UserService) CreateUser(user *entity.User) error {
 	user.Password = hashedPassword
 	return s.Repo.Create(user)
 }
+
+func (s *UserService) Authenticate(emailInput, passwordInput string) (*entity.User, error) {
+	user, err := s.Repo.GetByEmail(emailInput)
+	if err != nil {
+		return nil, err
+	}
+
+	if err = password.Verify(user.Password, passwordInput); err != nil {
+		return nil, err
+	}
+
+	return user, nil
+}
