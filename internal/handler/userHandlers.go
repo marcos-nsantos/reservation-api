@@ -22,12 +22,6 @@ func NewUserHandler(userService *service.UserService, key string) *UserHandler {
 	}
 }
 
-type CreateUserRequest struct {
-	Name     string `json:"name" binding:"required,max=255"`
-	Email    string `json:"email" binding:"required,email"`
-	Password string `json:"password" binding:"required"`
-}
-
 func (h *UserHandler) CreateUser(c *gin.Context) {
 	var createUserRequest CreateUserRequest
 
@@ -48,11 +42,6 @@ func (h *UserHandler) CreateUser(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, user)
-}
-
-type UserLoginRequest struct {
-	Email    string `json:"email" binding:"required,email"`
-	Password string `json:"password" binding:"required"`
 }
 
 func (h *UserHandler) Authenticate(c *gin.Context) {
