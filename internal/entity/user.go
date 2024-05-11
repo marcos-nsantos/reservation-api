@@ -7,12 +7,12 @@ import (
 )
 
 type User struct {
-	ID           uint64
-	Name         string `gorm:"type:varchar(255);not null"`
-	Email        string `gorm:"type:varchar(255);unique;not null"`
-	Password     string `gorm:"type:varchar(255);not null"`
-	Reservations []Reservation
-	CreatedAt    time.Time
-	UpdatedAt    time.Time
-	DeletedAt    gorm.DeletedAt `gorm:"index"`
+	ID           uint64         `json:"id"`
+	Name         string         `gorm:"type:varchar(255);not null" json:"name"`
+	Email        string         `gorm:"type:varchar(255);unique;not null" json:"email"`
+	Password     string         `gorm:"type:varchar(255);not null" json:"-"`
+	Reservations []Reservation  `json:"reservations"`
+	CreatedAt    time.Time      `json:"createdAt"`
+	UpdatedAt    time.Time      `json:"updatedAt"`
+	DeletedAt    gorm.DeletedAt `gorm:"index" json:"-"`
 }

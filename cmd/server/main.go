@@ -5,7 +5,10 @@ import (
 	"os"
 
 	"github.com/marcos-nsantos/reservation-api/internal/database"
+	"github.com/marcos-nsantos/reservation-api/internal/handler"
+	"github.com/marcos-nsantos/reservation-api/internal/repository"
 	"github.com/marcos-nsantos/reservation-api/internal/router"
+	"github.com/marcos-nsantos/reservation-api/internal/service"
 )
 
 func main() {
@@ -35,11 +38,15 @@ func main() {
 		os.Exit(1)
 	}
 
+	userRepo := repository.NewUserRepository(db)
+	userService := service.NewUserService(userRepo)
+	userHandler := handler.NewUserHandler(userService)
+
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
 	}
 
-	r := router.SetupRouter()
+	r := router.SetupRouter(userHandler)
 	r.Run(":" + port)
 }
