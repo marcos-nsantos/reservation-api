@@ -21,8 +21,8 @@ func (r *ReservationRepository) Create(reservation *entity.Reservation) error {
 func (r *ReservationRepository) CheckAvailability(reservation *entity.Reservation) bool {
 	var count int64
 	r.db.Model(&entity.Reservation{}).
-		Where("resource_id = ? AND ? < end_time AND ? > start_time",
-			reservation.ResourceID, reservation.StartTime, reservation.EndTime).
+		Where("resource_id = ? AND ? < end_time AND ? > start_time AND status <> ?",
+			reservation.ResourceID, reservation.EndTime, reservation.StartTime, entity.Cancelled).
 		Count(&count)
 
 	return count == 0
