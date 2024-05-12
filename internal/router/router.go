@@ -6,15 +6,25 @@ import (
 	"github.com/marcos-nsantos/reservation-api/internal/handler"
 )
 
-func SetupRouter(userHandler *handler.UserHandler) *gin.Engine {
+type Router struct {
+	UserHandler     *handler.UserHandler
+	ResourceHandler *handler.ResourceHandler
+}
+
+func (r *Router) SetupRouter() *gin.Engine {
 	router := gin.Default()
 
 	router.GET("/health", handler.Health)
 
 	userRoutes := router.Group("/users")
 	{
-		userRoutes.POST("", userHandler.CreateUser)
-		userRoutes.POST("/login", userHandler.Authenticate)
+		userRoutes.POST("", r.UserHandler.CreateUser)
+		userRoutes.POST("/login", r.UserHandler.Authenticate)
+	}
+
+	resourceRoutes := router.Group("/resources")
+	{
+		resourceRoutes.POST("", r.ResourceHandler.CreateResource)
 	}
 
 	return router

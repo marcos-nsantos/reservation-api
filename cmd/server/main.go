@@ -35,13 +35,22 @@ func main() {
 	userService := service.NewUserService(userRepo)
 	userHandler := handler.NewUserHandler(userService, key)
 
+	resourceRepo := repository.NewResourceRepository(db)
+	resourceService := service.NewResourceService(resourceRepo)
+	resourceHandler := handler.NewResourceHandler(resourceService)
+
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
 	}
 
-	r := router.SetupRouter(userHandler)
-	if err = r.Run(":" + port); err != nil {
+	routerHandlers := router.Router{
+		UserHandler:     userHandler,
+		ResourceHandler: resourceHandler,
+	}
+
+	err = routerHandlers.SetupRouter().Run(":" + port)
+	if err != nil {
 		fmt.Printf("failed to start server: %v\n", err)
 		os.Exit(1)
 	}
