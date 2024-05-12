@@ -13,4 +13,5 @@ var (
 var (
 	ErrReservationNotAvailable = errors.New("reservation not available")
 	ErrInvalidReservationTime  = errors.New("invalid reservation time")
+	ErrReservationNotFound     = errors.New("reservation not found")
 )

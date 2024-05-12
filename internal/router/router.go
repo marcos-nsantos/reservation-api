@@ -22,7 +22,7 @@ func (r *Router) SetupRouter() *gin.Engine {
 	userRoutes := router.Group("/users")
 	{
 		userRoutes.POST("", r.UserHandler.CreateUser)
-		userRoutes.POST("/login", r.UserHandler.Authenticate)
+		userRoutes.POST("login", r.UserHandler.Authenticate)
 	}
 
 	resourceRoutes := router.Group("/resources")
@@ -37,6 +37,7 @@ func (r *Router) SetupRouter() *gin.Engine {
 		reservationRoutes.Use(middleware.AuthMiddleware(r.Key))
 
 		reservationRoutes.POST("", r.ReservationHandler.CreateReservation)
+		reservationRoutes.GET("/:id", r.ReservationHandler.GetReservation)
 		reservationRoutes.GET("/auth-user", r.ReservationHandler.GetUserReservations)
 	}
 

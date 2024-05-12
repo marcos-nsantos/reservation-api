@@ -60,6 +60,23 @@ func (h *ReservationHandler) CreateReservation(c *gin.Context) {
 	c.JSON(http.StatusCreated, reservation)
 }
 
+func (h *ReservationHandler) GetReservation(c *gin.Context) {
+	id, _ := strconv.ParseUint(c.Param("id"), 10, 64)
+
+	reservation, err := h.ReservationService.GetReservationByID(id)
+	if err != nil {
+		if errors.Is(err, entity.ErrReservationNotFound) {
+			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+			return
+		}
+
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, reservation)
+}
+
 func (h *ReservationHandler) GetUserReservations(c *gin.Context) {
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
 	perPage, _ := strconv.Atoi(c.DefaultQuery("perPage", "10"))

@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"errors"
+
 	"gorm.io/gorm"
 
 	"github.com/marcos-nsantos/reservation-api/internal/entity"
@@ -28,6 +30,16 @@ func (r *ReservationRepository) CheckAvailability(reservation *entity.Reservatio
 		Count(&count)
 
 	return count == 0
+}
+
+func (r *ReservationRepository) GetByID(id uint64) (*entity.Reservation, error) {
+	var reservation entity.Reservation
+	err := r.db.First(&reservation, id).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, entity.ErrReservationNotFound
+	}
+
+	return &reservation, err
 }
 
 func (r *ReservationRepository) GetUserReservations(userID uint64, page, perPage int) ([]entity.Reservation, int64, error) {
