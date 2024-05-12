@@ -8,9 +8,10 @@ import (
 )
 
 type Router struct {
-	Key             string
-	UserHandler     *handler.UserHandler
-	ResourceHandler *handler.ResourceHandler
+	Key                string
+	UserHandler        *handler.UserHandler
+	ResourceHandler    *handler.ResourceHandler
+	ReservationHandler *handler.ReservationHandler
 }
 
 func (r *Router) SetupRouter() *gin.Engine {
@@ -29,6 +30,13 @@ func (r *Router) SetupRouter() *gin.Engine {
 		resourceRoutes.Use(middleware.AuthMiddleware(r.Key))
 
 		resourceRoutes.POST("", r.ResourceHandler.CreateResource)
+	}
+
+	reservationRoutes := router.Group("/reservations")
+	{
+		reservationRoutes.Use(middleware.AuthMiddleware(r.Key))
+
+		reservationRoutes.POST("", r.ReservationHandler.CreateReservation)
 	}
 
 	return router

@@ -1,6 +1,10 @@
 package entity
 
-import "time"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 type Status string
 
@@ -12,14 +16,14 @@ const (
 )
 
 type Reservation struct {
-	ID         uint64
-	UserID     uint64
-	ResourceID uint64
-	Resource   Resource
-	StartTime  time.Time `gorm:"not null"`
-	EndTime    time.Time `gorm:"not null"`
-	Status     Status    `gorm:"type:varchar(9);not null;default:'pending"`
-	CreatedAt  time.Time
-	UpdatedAt  time.Time
-	DeletedAt  time.Time
+	ID         uint64         `json:"id"`
+	UserID     uint64         `json:"userID"`
+	ResourceID uint64         `json:"resourceID"`
+	Resource   Resource       `json:"-"`
+	StartTime  time.Time      `gorm:"not null" json:"startTime"`
+	EndTime    time.Time      `gorm:"not null" json:"endTime"`
+	Status     Status         `gorm:"type:varchar(9);not null;default:'pending" json:"status"`
+	CreatedAt  time.Time      `json:"createdAt"`
+	UpdatedAt  time.Time      `json:"updatedAt"`
+	DeletedAt  gorm.DeletedAt `gorm:"index" json:"-"`
 }

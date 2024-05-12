@@ -39,15 +39,20 @@ func main() {
 	resourceService := service.NewResourceService(resourceRepo)
 	resourceHandler := handler.NewResourceHandler(resourceService)
 
+	reservationRepo := repository.NewReservationRepository(db)
+	reservationService := service.NewReservationService(reservationRepo, resourceRepo)
+	reservationHandler := handler.NewReservationHandler(reservationService)
+
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
 	}
 
 	routerHandlers := router.Router{
-		Key:             key,
-		UserHandler:     userHandler,
-		ResourceHandler: resourceHandler,
+		Key:                key,
+		UserHandler:        userHandler,
+		ResourceHandler:    resourceHandler,
+		ReservationHandler: reservationHandler,
 	}
 
 	err = routerHandlers.SetupRouter().Run(":" + port)
