@@ -3,7 +3,7 @@ package handler
 import (
 	"errors"
 	"net/http"
-	"time"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 
@@ -19,12 +19,6 @@ func NewReservationHandler(reservationService *service.ReservationService) *Rese
 	return &ReservationHandler{
 		ReservationService: reservationService,
 	}
-}
-
-type CreateReservationRequest struct {
-	ResourceID uint64    `json:"resourceID" binding:"required"`
-	StartTime  time.Time `json:"startTime" binding:"required"`
-	EndTime    time.Time `json:"endTime" binding:"required"`
 }
 
 func (h *ReservationHandler) CreateReservation(c *gin.Context) {
@@ -64,4 +58,24 @@ func (h *ReservationHandler) CreateReservation(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, reservation)
+}
+
+func (h *ReservationHandler) GetUserReservations(c *gin.Context) {
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	perPage, _ := strconv.Atoi(c.DefaultQuery("perPage", "10"))
+
+	userID := c.GetUint64("userID")
+
+	reservations, total, err := h.ReservationService.GetUserReservations(userID, page, perPage)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, ReservationResponseWithPagination{
+		Reservations: reservations,
+		Total:        total,
+		Page:         page,
+		PerPage:      perPage,
+	})
 }

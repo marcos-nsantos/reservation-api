@@ -37,6 +37,7 @@ func (r *Router) SetupRouter() *gin.Engine {
 		reservationRoutes.Use(middleware.AuthMiddleware(r.Key))
 
 		reservationRoutes.POST("", r.ReservationHandler.CreateReservation)
+		reservationRoutes.GET("/auth-user", r.ReservationHandler.GetUserReservations)
 	}
 
 	return router

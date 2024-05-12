@@ -35,3 +35,7 @@ func (s *ReservationService) CreateReservation(reservation *entity.Reservation) 
 
 	return s.ReservationRepository.Create(reservation)
 }
+
+func (s *ReservationService) GetUserReservations(userID uint64, page, perPage int) ([]entity.Reservation, int64, error) {
+	return s.ReservationRepository.GetUserReservations(userID, page, perPage)
+}

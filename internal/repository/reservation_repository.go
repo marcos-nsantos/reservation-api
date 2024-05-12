@@ -21,9 +21,25 @@ func (r *ReservationRepository) Create(reservation *entity.Reservation) error {
 func (r *ReservationRepository) CheckAvailability(reservation *entity.Reservation) bool {
 	var count int64
 	r.db.Model(&entity.Reservation{}).
-		Where("resource_id = ? AND ? < end_time AND ? > start_time AND status <> ?",
-			reservation.ResourceID, reservation.EndTime, reservation.StartTime, entity.Cancelled).
+		Where("resource_id = ?", reservation.ResourceID).
+		Where("? < end_time AND ? > start_time", reservation.EndTime, reservation.StartTime).
+		Where("status <> ?", entity.Cancelled).
+		Where("status <> ?", entity.Rejected).
 		Count(&count)
 
 	return count == 0
+}
+
+func (r *ReservationRepository) GetUserReservations(userID uint64, page, perPage int) ([]entity.Reservation, int64, error) {
+	var reservations []entity.Reservation
+	var total int64
+
+	r.db.Model(&entity.Reservation{}).
+		Where("user_id = ?", userID).
+		Count(&total).
+		Offset((page - 1) * perPage).
+		Limit(perPage).
+		Find(&reservations)
+
+	return reservations, total, nil
 }
