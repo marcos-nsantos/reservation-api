@@ -15,6 +15,10 @@ func NewUserService(repo *repository.UserRepository) *UserService {
 }
 
 func (s *UserService) CreateUser(user *entity.User) error {
+	if _, err := s.Repo.GetByEmail(user.Email); err == nil {
+		return entity.ErrEmailAlreadyExists
+	}
+
 	hashedPassword, err := password.Hash(user.Password)
 	if err != nil {
 		return err
