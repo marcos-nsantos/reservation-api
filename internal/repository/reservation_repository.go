@@ -55,3 +55,7 @@ func (r *ReservationRepository) GetUserReservations(userID uint64, page, perPage
 
 	return reservations, total, nil
 }
+
+func (r *ReservationRepository) Update(reservation *entity.Reservation) error {
+	return r.db.Save(reservation).Error
+}

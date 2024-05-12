@@ -21,24 +21,25 @@ func (r *Router) SetupRouter() *gin.Engine {
 
 	userRoutes := router.Group("/users")
 	{
-		userRoutes.POST("", r.UserHandler.CreateUser)
-		userRoutes.POST("login", r.UserHandler.Authenticate)
+		userRoutes.POST("/", r.UserHandler.CreateUser)
+		userRoutes.POST("/login", r.UserHandler.Authenticate)
 	}
 
 	resourceRoutes := router.Group("/resources")
 	{
 		resourceRoutes.Use(middleware.AuthMiddleware(r.Key))
 
-		resourceRoutes.POST("", r.ResourceHandler.CreateResource)
+		resourceRoutes.POST("/", r.ResourceHandler.CreateResource)
 	}
 
 	reservationRoutes := router.Group("/reservations")
 	{
 		reservationRoutes.Use(middleware.AuthMiddleware(r.Key))
 
-		reservationRoutes.POST("", r.ReservationHandler.CreateReservation)
+		reservationRoutes.POST("/", r.ReservationHandler.CreateReservation)
 		reservationRoutes.GET("/:id", r.ReservationHandler.GetReservation)
 		reservationRoutes.GET("/auth-user", r.ReservationHandler.GetUserReservations)
+		reservationRoutes.DELETE("/:id", r.ReservationHandler.CancelReservation)
 	}
 
 	return router

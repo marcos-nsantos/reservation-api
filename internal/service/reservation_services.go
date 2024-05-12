@@ -43,3 +43,13 @@ func (s *ReservationService) GetReservationByID(id uint64) (*entity.Reservation,
 func (s *ReservationService) GetUserReservations(userID uint64, page, perPage int) ([]entity.Reservation, int64, error) {
 	return s.ReservationRepository.GetUserReservations(userID, page, perPage)
 }
+
+func (s *ReservationService) CancelReservation(reservationID uint64) error {
+	reservation, err := s.ReservationRepository.GetByID(reservationID)
+	if err != nil {
+		return err
+	}
+
+	reservation.Status = entity.Cancelled
+	return s.ReservationRepository.Update(reservation)
+}

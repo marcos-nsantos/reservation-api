@@ -96,3 +96,19 @@ func (h *ReservationHandler) GetUserReservations(c *gin.Context) {
 		PerPage:      perPage,
 	})
 }
+
+func (h *ReservationHandler) CancelReservation(c *gin.Context) {
+	id, _ := strconv.ParseUint(c.Param("id"), 10, 64)
+
+	if err := h.ReservationService.CancelReservation(id); err != nil {
+		if errors.Is(err, entity.ErrReservationNotFound) {
+			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+			return
+		}
+
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.Status(http.StatusNoContent)
+}
