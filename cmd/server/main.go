@@ -45,6 +45,7 @@ func main() {
 	}
 
 	routerHandlers := router.Router{
+		Key:             key,
 		UserHandler:     userHandler,
 		ResourceHandler: resourceHandler,
 	}
